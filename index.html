@@ -7,7 +7,7 @@
     
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Custom CSS -->
+    <!-- Link to Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,47 +18,44 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
         </div>
     </nav>
 
     <header class="bg-dark text-white">
-      <div class="container">
-          <div class="row align-items-center"> <!-- Flexbox alignment -->
-              <div class="col-md-6">
-                  <h1 class="display-4">Thien An Nguyen</h1>
-              </div>
-              <div class="col-md-6 text-right"> <!-- Right-align the image column -->
-                  <img src="images/Guitar (media 2).png" alt="Thien An Nguyen" class="header-image">
-              </div>
-          </div>
-      </div>
-  </header>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-4">Thien An Nguyen</h1>
+                </div>
+                <div class="col-md-6 text-right">
+                    <img src="images/Guitar (media 2).png" alt="Thien An Nguyen" class="header-image">
+                </div>
+            </div>
+        </div>
+    </header>
   
     <div class="container">
         <main class="mt-4">
             <div class="row">
                 <div class="col-md-12" id="about">
                     <h2>About Me</h2>
-                    <p>Hello! My name is Thien An Nguyen, and I'm a passionate guitarist based in San Jose. I have a deep love for music and have been playing the guitar for many years. Whether you're a beginner looking to start your musical journey or an experienced player aiming to refine your skills, I'm here to help you achieve your musical goals.</p>
-                    
+                    <p>Hello! My name is Thien An Nguyen, and I'm a passionate guitarist based in San Jose...</p>
                     <h2>Contact Information</h2>
                     <ul>
                         <li>Phone: +1 (657) 722-8927</li>
                         <li>Email: thienan.guitarist@email.com</li>
                     </ul>
-                    
                     <h2>Connect with Me</h2>
                     <ul>
                         <li><a href="https://www.facebook.com/nguyenthienan95/" target="_blank">Facebook</a></li>
                         <li><a href="https://www.instagram.com/nguyenthienan95/" target="_blank">Instagram</a></li>
-                        <li><a href="https://www.youtube.com/nta105" target="_blank">YouTube</a> - Check out my videos!</li>
+                        <li><a href="https://www.youtube.com/nta105" target="_blank">YouTube</a></li>
                     </ul>
                 </div>
             </div>
             <div class="container mt-5" id="contact">
                 <h2>Contact Me</h2>
-                <p>If you are interested in private guitar lessons or booking me for performances at events and parties, please use the form below to send me a message!</p>
+                <p>If you are interested in private guitar lessons or booking me for performances, please use the form below to send me a message!</p>
                 <form id="contactForm">
                     <div class="form-group">
                         <label for="name">Your Name:</label>
@@ -81,13 +78,13 @@
         &copy; 2023 Thien An Nguyen. All Rights Reserved.
     </footer>
 
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+    <script src="app.js"></script>
     <!-- Include Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Firebase Integration -->
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
-    <script src="app.js"></script>
 </body>
 </html>

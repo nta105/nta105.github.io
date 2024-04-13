@@ -8,23 +8,24 @@ body {
     border-radius: 8px;
     margin-top: 20px;
 }
+
 .header-image {
-    height: 300px; /* Larger height */
-    width: auto; /* Maintain aspect ratio */
+    height: 300px;
+    width: auto;
 }
 
 .display-4 {
-    margin-bottom: 0; /* Remove margin bottom from the heading if necessary */
+    margin-bottom: 0;
 }
 
 @media (max-width: 768px) {
     .header-image {
-        height: 150px; /* Adjust size for smaller screens */
+        height: 150px;
     }
     .display-4 {
-        font-size: 2rem; /* Adjust font size on smaller screens */
+        font-size: 2rem;
     }
     .col-md-6 {
-        text-align: center; /* Center-align elements on small screens */
+        text-align: center;
     }
 }
