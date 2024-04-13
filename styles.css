@@ -1,11 +1,15 @@
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Merriweather', sans-serif;
     color: #333;
     background: url('images/background.avif') no-repeat center center fixed;
     background-size: cover;
     padding: 20px;
     position: relative;
+}
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif; /* Stylish header font */
+    text-shadow: 1px 1px 2px black; /* Maintains text readability */
 }
 
 body::before {
