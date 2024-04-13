@@ -63,21 +63,6 @@ h1, h2, h3, p {
 
 .youtube i { color: #FF0000; }
 
-body {
-    font-family: 'Open Sans', sans-serif;
-    color: #333;
-    background: url('https://images.unsplash.com/photo-1650743751337-34b23022edfe?q=80&w=4000&auto=format&fit=crop') no-repeat center center fixed;
-    background-size: cover;
-    padding: 20px;
-}
-
-body::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
 
 @media (max-width: 768px) {
     .header img {
