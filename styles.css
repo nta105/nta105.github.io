@@ -1,0 +1,30 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#booking {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.header-image {
+    height: 300px; /* Larger height */
+    width: auto; /* Maintain aspect ratio */
+}
+
+.display-4 {
+    margin-bottom: 0; /* Remove margin bottom from the heading if necessary */
+}
+
+@media (max-width: 768px) {
+    .header-image {
+        height: 150px; /* Adjust size for smaller screens */
+    }
+    .display-4 {
+        font-size: 2rem; /* Adjust font size on smaller screens */
+    }
+    .col-md-6 {
+        text-align: center; /* Center-align elements on small screens */
+    }
+}
