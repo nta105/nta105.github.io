@@ -2,7 +2,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
     color: #333;
-    background: url('https://images.unsplash.com/photo-1650743751337-34b23022edfe?q=80&w=4000&auto=format&fit=crop') no-repeat center center fixed;
+    background: url('images/background.avif') no-repeat center center fixed;
     background-size: cover;
     padding: 20px;
     position: relative;
