@@ -1,31 +1,86 @@
+
 body {
-    font-family: 'Arial', sans-serif;
-}
-
-#booking {
-    background-color: #f8f9fa;
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    background: url('https://images.unsplash.com/photo-1650743751337-34b23022edfe?q=80&w=4000&auto=format&fit=crop') no-repeat center center fixed;
+    background-size: cover;
     padding: 20px;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+.container, .navbar, footer, header, section {
+    background-color: transparent;
+    color: #fff;
+}
+
+section {
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-.header-image {
-    height: 300px;
-    width: auto;
+.navbar, footer {
+    background-color: rgba(0, 0, 0, 0.85);
 }
 
-.display-4 {
-    margin-bottom: 0;
+.social-icon i {
+    font-size: 2rem;
+    transition: transform 0.2s;
+}
+
+.social-icon:hover i {
+    transform: scale(1.1);
+}
+
+h1, h2, h3, p {
+    text-shadow: 1px 1px 2px black;
+}
+
+.social-icon {
+    display: inline-block;
+    margin: 0 10px;
+    text-align: center;
+}
+
+.facebook i { color: #1877F2; }
+
+.instagram i {
+    background: radial-gradient(circle farthest-corner at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.youtube i { color: #FF0000; }
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    background: url('https://images.unsplash.com/photo-1650743751337-34b23022edfe?q=80&w=4000&auto=format&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+    padding: 20px;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 768px) {
-    .header-image {
-        height: 150px;
-    }
-    .display-4 {
-        font-size: 2rem;
-    }
-    .col-md-6 {
-        text-align: center;
+    .header img {
+        width: 100%;
     }
 }

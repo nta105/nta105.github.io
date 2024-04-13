@@ -3,86 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thien An Nguyen</title>
+    <title>Thien An Nguyen - Guitarist</title>
     
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <!-- Link to Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Navbar with menu button -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Thien An Nguyen</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
-    <header class="bg-dark text-white">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h1 class="display-4">Thien An Nguyen</h1>
-                </div>
-                <div class="col-md-6 text-right">
-                    <img src="images/Guitar (media 2).png" alt="Thien An Nguyen" class="header-image">
-                </div>
-            </div>
+  
+    <!-- Header -->
+    <header class="text-white text-center">
+        <div class="container py-4">
+            <h1 class="display-4">Thien An Nguyen</h1>
+            <p class="lead">Professional Guitarist & Music Instructor</p>
+            <img src="images/Guitar (media 2).png" alt="Thien An Nguyen" class="img-fluid my-4" >
         </div>
     </header>
   
-    <div class="container">
-        <main class="mt-4">
-            <div class="row">
-                <div class="col-md-12" id="about">
-                    <h2>About Me</h2>
-                    <p>Hello! My name is Thien An Nguyen, and I'm a passionate guitarist based in San Jose...</p>
-                    <h2>Contact Information</h2>
-                    <ul>
-                        <li>Phone: +1 (657) 722-8927</li>
-                        <li>Email: thienan.guitarist@email.com</li>
-                    </ul>
-                    <h2>Connect with Me</h2>
-                    <ul>
-                        <li><a href="https://www.facebook.com/nguyenthienan95/" target="_blank">Facebook</a></li>
-                        <li><a href="https://www.instagram.com/nguyenthienan95/" target="_blank">Instagram</a></li>
-                        <li><a href="https://www.youtube.com/nta105" target="_blank">YouTube</a></li>
-                    </ul>
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <main>
+            <!-- About Me -->
+            <section id="about">
+              <h2>About Me</h2>
+              <p>Welcome! I am Thien An Nguyen, a self-taught guitarist with a passion that has grown over nearly a decade. My educational journey unfolded on platforms like YouTube, where I cultivated a deep mastery of the guitar. Based in the vibrant Bay Area, I am devoted to enriching our local music scene by sharing my love for music through teaching and performance.</p>
+              <p>My career has been marked by celebrated collaborations with notable Vietnamese artists such as Ho Ngoc Ha, Bui Anh Tuan, Vu Cat Tuong, Chi Dan, and Vo Ha Tram. These experiences have greatly enriched my musical diversity and allowed me to contribute meaningfully to the cultural tapestry of Vietnam and beyond.</p>
+          </section>
+          
+          
+
+            <!-- Services -->
+            <section id="services" class="mt-4">
+              <h2>Services Offered</h2>
+              <div class="row">
+                  <div class="col-md-6">
+                      <h3>Guitar Lessons</h3>
+                      <p>I offer personalized one-on-one guitar lessons tailored to fit the needs of each student. Whether you are in the Bay Area or prefer to learn online via Zoom, Discord, or another platform, my lessons provide flexible options to suit your learning style. Specializing in fingerstyle percussive guitar, I also offer lessons in composing Vietnamese songs and singing, with instruction available in both Vietnamese and English.</p>
+                  </div>
+                  <div class="col-md-6">
+                    <h3>Live Performances</h3>
+                    <p>As a performer, I am eager to share my music at various events and venues. My performances have been recognized and celebrated across the United States, with first-place awards at talent shows in De Anza, San Jose City College, and the Tet Festival in San Jose. Highlights of my career include performing at the San Jose Museum of Arts and alongside Omar Alejandro in the Cantar Con Los Reyes program, reflecting my versatility and broad appeal.</p>
+                    <p>In addition to public events, I am available for private gigs, where I bring my specialty in fingerstyle percussive guitar solos to create a memorable experience for all attendees.</p>
                 </div>
             </div>
-            <div class="container mt-5" id="contact">
-                <h2>Contact Me</h2>
-                <p>If you are interested in private guitar lessons or booking me for performances, please use the form below to send me a message!</p>
-                <form id="contactForm">
-                    <div class="form-group">
-                        <label for="name">Your Name:</label>
-                        <input type="text" class="form-control" id="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address:</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Your Message:</label>
-                        <textarea class="form-control" id="message" rows="3" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
+        </section>
+        
+
+            <!-- Contact Information -->
+            <section id="contact-info" class="mt-4">
+                <h2>Contact Information</h2>
+                <p>Phone: +1 (657) 722-8927</p>
+                <p>Email: <a href="mailto:thienan.guitarist@email.com">thienan.guitarist@email.com</a></li>
+            </section>
+
+            <!-- Connect with Me -->
+            <section id="connect" class="mt-4">
+              <h2>Connect with Me</h2>
+              <div class="row">
+                  <div class="col-sm-4 text-center">
+                      <a href="https://www.facebook.com/nguyenthienan95/" target="_blank" class="social-icon facebook">
+                          <i class="fab fa-facebook fa-2x"></i>
+                          <p>Facebook</p>
+                      </a>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                      <a href="https://www.instagram.com/nguyenthienan95/" target="_blank" class="social-icon instagram">
+                          <i class="fab fa-instagram fa-2x"></i>
+                          <p>Instagram</p>
+                      </a>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                      <a href="https://www.youtube.com/nta105" target="_blank" class="social-icon youtube">
+                          <i class="fab fa-youtube fa-2x"></i>
+                          <p>YouTube</p>
+                      </a>
+                  </div>
+              </div>
+          </section>
+          
         </main>
     </div>
-    <footer class="bg-dark text-white text-center py-3">
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-4">
         &copy; 2023 Thien An Nguyen. All Rights Reserved.
     </footer>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
-    <script src="app.js"></script>
-    <!-- Include Bootstrap JavaScript -->
+    <!-- Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
