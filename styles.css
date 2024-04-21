@@ -73,3 +73,11 @@ h1, h2, h3, p {
         width: 100%;
     }
 }
+.social-icon i {
+    font-size: 3rem;  /* Increased from 2rem to 3rem */
+    transition: transform 0.2s;  /* Smooth size transition on hover */
+}
+
+.social-icon:hover i {
+    transform: scale(1.1);  /* Slightly enlarges the icon when hovered */
+}
