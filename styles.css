@@ -82,11 +82,18 @@ h1, h2, h3, p {
     transform: scale(1.1);  /* Slightly enlarges the icon when hovered */
 }
 
-/* Adding responsive design for small devices like iPhone */
 @media (max-width: 767px) {
     img.venmo-qr {
         width: 100%; /* makes the image width responsive to its container */
         max-width: 200px; /* limits the image size to not become too large */
         height: auto; /* keeps the aspect ratio intact */
+    }
+}
+
+/* For larger screens */
+@media (min-width: 768px) {
+    img.venmo-qr {
+        max-width: 100%; /* Allows the image to fill the container */
+        height: auto; /* Maintains aspect ratio */
     }
 }
