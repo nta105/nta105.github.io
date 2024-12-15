@@ -75,8 +75,19 @@
         <!-- Featured Video Section -->
         <section id="featured-video" class="video-container mb-5">
             <h2 class="text-center mb-4">Featured Performance</h2>
-            <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/8Xu0W06eUaw?autoplay=1&mute=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="embed-responsive embed-responsive-16by9 video-wrapper">
+                <div id="video-overlay" class="video-overlay">
+                    <button class="play-button">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <iframe 
+                    id="youtube-video"
+                    class="embed-responsive-item" 
+                    src="https://www.youtube.com/embed/8Xu0W06eUaw"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
             </div>
             <div class="text-center mt-3">
                 <h3>Live Performance at San Jose Museum of Arts (2024)</h3>
@@ -186,6 +197,19 @@
                 }
             });
         });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.getElementById('video-overlay');
+        const video = document.getElementById('youtube-video');
+        
+        if (overlay && video) {
+            overlay.addEventListener('click', function() {
+                video.src += '?autoplay=1';
+                overlay.classList.add('hidden');
+            });
+        }
     });
     </script>
 </body>
