@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Werewolf Game — Host Mode</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --panel: #171b2e;
+      --panel-2: #1e2440;
+      --text: #e8ecff;
+      --muted: #aab3d8;
+      --accent: #7c8cff;
+      --accent-2: #4ad6a9;
+      --danger: #ff6b6b;
+      --warning: #ffd166;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 16px 40px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #1a2040 0%, var(--bg) 55%);
+      color: var(--text);
+    }
+    .app {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    header {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(124,140,255,0.18), rgba(74,214,169,0.10));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+    header p { margin: 0; color: var(--muted); }
+    .card {
+      background: rgba(23,27,46,0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card h2, .card h3 {
+      margin: 0;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .card .content { padding: 16px 18px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    input, textarea, button, select {
+      width: 100%;
+      background: #101425;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: rgba(124,140,255,0.7); box-shadow: 0 0 0 3px rgba(124,140,255,0.12); }
+    textarea { min-height: 92px; resize: vertical; }
+    .grid { display: grid; gap: 12px; }
+    .grid.two { grid-template-columns: 1fr 1fr; }
+    .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .row { display: grid; gap: 12px; grid-template-columns: 1fr auto; align-items: end; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #9ea7ff);
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: transform .08s ease, opacity .15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button.secondary { background: #27304d; color: var(--text); border: 1px solid rgba(255,255,255,0.08); }
+    button.good { background: linear-gradient(135deg, #24c08a, #4ad6a9); }
+    button.warn { background: linear-gradient(135deg, #d79a1a, #ffd166); color: #1b1b1b; }
+    button.danger { background: linear-gradient(135deg, #ff6b6b, #ff8f8f); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .small { font-size: 13px; color: var(--muted); }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.06); color: var(--text); font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-right: 8px; margin-bottom: 8px;
+    }
+    .list {
+      display: grid; gap: 8px;
+      max-height: 430px; overflow: auto; padding-right: 4px;
+    }
+    .player-item {
+      display: flex; justify-content: space-between; gap: 10px; align-items: center;
+      padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .player-item.dead { opacity: 0.55; }
+    .player-meta { color: var(--muted); font-size: 12px; }
+    .log {
+      background: #0d1020;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 240px;
+      max-height: 560px;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+    .status-box {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+    .muted { color: var(--muted); }
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(3,5,14,0.94);
+      display: none;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.show { display: flex; }
+    .overlay-card {
+      width: min(760px, 100%);
+      background: linear-gradient(180deg, rgba(28,34,59,0.98), rgba(15,18,32,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      padding: 22px;
+    }
+    .overlay h2 { margin: 0 0 10px; font-size: 24px; }
+    .overlay p { margin: 0 0 14px; color: var(--muted); }
+    .overlay .big {
+      font-size: 18px; line-height: 1.6;
+      padding: 16px; border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 14px;
+    }
+    .overlay input { margin-bottom: 10px; }
+    .flex-between { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .hidden { display: none !important; }
+    .hr { height: 1px; background: rgba(255,255,255,0.08); margin: 12px 0; }
+    .footer-note { font-size: 12px; color: var(--muted); }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .grid.two, .grid.three, .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Werewolf / Ma Sói — Browser Edition</h1>
+      <p>Single-file host tool for party play: fast setup, private role reveals, bilingual input, accurate night summaries, and the same win conditions.</p>
+    </header>
+
+    <section class="card" id="setupCard">
+      <h2>Thiết lập</h2>
+      <div class="content grid">
+        <div class="grid two">
+          <div>
+            <label>Tổng số người chơi</label>
+            <input id="numPlayers" type="number" min="2" placeholder="Ví dụ: 10" />
+          </div>
+          <div>
+            <label>Chuỗi vai trò (VN hoặc EN)</label>
+            <input id="rolesInput" type="text" placeholder="Ví dụ: 1 Soi, 1 Witch, 1 Mirror" />
+          </div>
+        </div>
+        <div>
+          <label>Tên người chơi, mỗi dòng một tên</label>
+          <textarea id="namesInput" placeholder="PLAYER 1&#10;PLAYER 2&#10;PLAYER 3"></textarea>
+        </div>
+        <div class="btn-row">
+          <button id="startBtn">Bắt đầu trò chơi</button>
+          <button id="fillDemoBtn" class="secondary">Điền ví dụ</button>
+          <button id="resetBtn" class="secondary">Làm lại</button>
+        </div>
+        <div class="small">
+          Hỗ trợ tên vai trò tiếng Việt và tiếng Anh: Ma Sói / Soi / Wolf / Werewolf, Sói Con / Wolf Cub, Tiên Tri / Seer, Bảo Vệ / Bodyguard, Phù Thủy / Witch, Thợ Săn / Hunter, Già Làng / Elder, Cupid, 50/50, Dân Làng / Villager / Dan, Bitch, Gương / Mirror.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Trạng thái game</h2>
+      <div class="content">
+        <div class="status-box" id="statusBox">
+          <div><strong>Chưa bắt đầu.</strong></div>
+          <div class="muted">Nhập số người chơi, danh sách tên, và vai trò rồi bấm Bắt đầu.</div>
+        </div>
+        <div class="btn-row" id="actionButtons">
+          <button id="nextStepBtn" class="good hidden">Tiếp tục</button>
+          <button id="daySkipBtn" class="secondary hidden">Bỏ qua treo cổ ban ngày</button>
+          <button id="showReportBtn" class="secondary hidden">Xem tổng kết</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Nhật ký</h2>
+      <div class="content">
+        <div class="log" id="logBox"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Người chơi</h2>
+      <div class="content">
+        <div class="list" id="playersList"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <h2 id="overlayTitle">Thông báo</h2>
+      <p id="overlaySubtitle"></p>
+      <div class="big" id="overlayBody"></div>
+      <input id="overlayInput" type="text" class="hidden" autocomplete="off" />
+      <div class="btn-row">
+        <button id="overlayPrimary">OK</button>
+        <button id="overlaySecondary" class="secondary hidden">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      players: [],
+      nightCount: 0,
+      witchHeal: true,
+      witchPoison: true,
+      extraKillNextNight: false,
+      isCursed: false,
+      pendingHunterKill: null,
+      lastProtected: null,
+      currentNightDeaths: null,
+      currentNightDeathEvents: null,
+      gameLogs: [],
+      running: false,
+      phase: 'setup',
+      mirrorIndex: null,
+      mirrorTargetIndex: null,
+      currentPromptResolve: null,
+      currentPromptReject: null,
+      currentPromptMode: null,
+    };
+
+    const roleMap = new Map([
+      ['masoi', 'Ma Sói'], ['soi', 'Ma Sói'], ['wolf', 'Ma Sói'], ['werewolf', 'Ma Sói'],
+      ['soicon', 'Sói Con'], ['wolfcub', 'Sói Con'],
+      ['tientri', 'Tiên Tri'], ['seer', 'Tiên Tri'],
+      ['baove', 'Bảo Vệ'], ['bodyguard', 'Bảo Vệ'],
+      ['phuthuy', 'Phù Thủy'], ['witch', 'Phù Thủy'],
+      ['thosan', 'Thợ Săn'], ['hunter', 'Thợ Săn'],
+      ['gialang', 'Già Làng'], ['elder', 'Già Làng'],
+      ['cupid', 'Cupid'],
+      ['50/50', '50/50'],
+      ['danlang', 'Dân Làng'], ['dan', 'Dân Làng'], ['villager', 'Dân Làng'],
+      ['bitch', 'Bitch'],
+      ['guong', 'Gương'], ['mirror', 'Gương'],
+    ]);
+
+    function normalizeText(s) {
+      return (s || '')
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/\s+/g, '');
+    }
+
+    function log(message) {
+      state.gameLogs.push(message);
+      renderLogs();
+    }
+
+    function renderLogs() {
+      $('logBox').textContent = state.gameLogs.join('\n');
+      $('logBox').scrollTop = $('logBox').scrollHeight;
+    }
+
+    function renderPlayers() {
+      const box = $('playersList');
+      box.innerHTML = '';
+      state.players.forEach((p, idx) => {
+        const div = document.createElement('div');
+        div.className = 'player-item' + (p.isAlive ? '' : ' dead');
+        let roleName = p.role;
+        if (p.role === '50/50' && p.isAlive) {
+          roleName = `50/50 (${p.isTransformed ? 'Sói' : 'Dân Làng'})`;
+        }
+        if (p.linkedWith !== null) roleName += ' (Cặp đôi)';
+        div.innerHTML = `
+          <div>
+            <div><strong>${escapeHtml(p.name)}</strong></div>
+            <div class="player-meta">Vai: ${escapeHtml(roleName)} · ${p.isAlive ? 'SỐNG' : 'ĐÃ CHẾT'}</div>
+          </div>
+          <div class="pill">${p.side}</div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderStatus(message, sub = '') {
+      $('statusBox').innerHTML = `<div><strong>${escapeHtml(message)}</strong></div><div class="muted">${escapeHtml(sub)}</div>`;
+      renderPlayers();
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getAlivePlayers() {
+      return state.players.filter(p => p.isAlive);
+    }
+
+    function getPlayerByName(name, aliveOnly = true) {
+      const target = String(name || '').trim().toUpperCase();
+      if (!target) return null;
+      return state.players.find(p => p.name === target && (!aliveOnly || p.isAlive)) || null;
+    }
+
+    function getPlayerIndexByName(name, aliveOnly = true) {
+      const target = String(name || '').trim().toUpperCase();
+      if (!target) return -1;
+      return state.players.findIndex(p => p.name === target && (!aliveOnly || p.isAlive));
+    }
+
+    function reflect(targetIndex, mirrorIndex, mirrorTargetIndex) {
+      if (targetIndex === mirrorIndex && mirrorTargetIndex !== null) return mirrorTargetIndex;
+      return targetIndex;
+    }
+
+    function kill(playerIndex, reason, isDaytime = false, silent = false) {
+      const player = state.players[playerIndex];
+      if (!player || !player.isAlive) return;
+      player.lives -= 1;
+      if (player.lives > 0) {
+        log(`-> ${player.name} bị tấn công (${reason}) nhưng vẫn còn mạng.`);
+        renderPlayers();
+        return;
+      }
+      player.isAlive = false;
+      if (!isDaytime) {
+        if (state.currentNightDeaths) state.currentNightDeaths.add(playerIndex);
+        if (state.currentNightDeathEvents) state.currentNightDeathEvents.push(playerIndex);
+      }
+      log(`-> ${player.name} (${player.role}) ĐÃ CHẾT do ${reason}.`);
+      if (isDaytime && !silent) alert(`💀 ${player.name} (${player.role}) ĐÃ CHẾT! [${reason}]`);
+      if (player.role === 'Già Làng') state.isCursed = true;
+      if (player.role === 'Sói Con') state.extraKillNextNight = true;
+      if (player.linkedWith !== null && state.players[player.linkedWith]?.isAlive) {
+        kill(player.linkedWith, 'Chết chùm (Cupid)', false, silent);
+      }
+      if (player.role === 'Thợ Săn' && !state.isCursed) {
+        if (player.hunterTarget !== null && state.players[player.hunterTarget]?.isAlive) {
+          if (!isDaytime) kill(player.hunterTarget, 'Thợ Săn kéo', false, silent);
+          else state.pendingHunterKill = player.hunterTarget;
+        }
+      }
+      renderPlayers();
+    }
+
+    function yesLike(input) {
+      const n = normalizeText(input);
+      return ['y','yes','co','c','ok','oui','1','true'].includes(n);
+    }
+
+    function parseRoles(raw, numPlayers) {
+      const rolePool = [];
+      const items = String(raw || '').split(',');
+      for (const item of items) {
+        const trimmed = item.trim();
+        if (!trimmed) continue;
+        const match = trimmed.match(/^(\d+)\s*(.*)$/);
+        let count = 1;
+        let roleName = trimmed;
+        if (match) {
+          count = parseInt(match[1], 10);
+          roleName = match[2];
+        }
+        const cleaned = normalizeText(roleName);
+        const canonical = roleMap.get(cleaned);
+        if (canonical) {
+          for (let i = 0; i < count; i++) rolePool.push(canonical);
+        }
+      }
+      while (rolePool.length < numPlayers) rolePool.push('Dân Làng');
+      for (let i = rolePool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [rolePool[i], rolePool[j]] = [rolePool[j], rolePool[i]];
+      }
+      return rolePool.slice(0, numPlayers);
+    }
+
+    function buildPlayers() {
+      const numPlayers = parseInt($('numPlayers').value, 10);
+      const names = $('namesInput').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const rawRoles = $('rolesInput').value;
+      if (!Number.isInteger(numPlayers) || numPlayers < 2) {
+        alert('Nhập tổng số người chơi hợp lệ.');
+        return null;
+      }
+      if (names.length < numPlayers) {
+        while (names.length < numPlayers) names.push(`PLAYER_${names.length + 1}`);
+      }
+      const rolePool = parseRoles(rawRoles, numPlayers);
+      const players = [];
+      for (let i = 0; i < numPlayers; i++) {
+        const name = (names[i] || `PLAYER_${i+1}`).trim().toUpperCase();
+        const role = rolePool[i];
+        const p = {
+          name,
+          role,
+          side: role.includes('Sói') ? 'Sói' : (role === 'Gương' ? 'Gương' : 'Dân'),
+          isAlive: true,
+          lives: role === 'Già Làng' ? 2 : 1,
+          linkedWith: null,
+          hunterTarget: null,
+          isTransformed: false,
+          markedByMirror: false,
+        };
+        players.push(p);
+      }
+      return players;
+    }
+
+    async function promptModal({ title, subtitle = '', body = '', placeholder = '', type = 'text', allowCancel = false, primaryText = 'OK', secondaryText = 'Hủy' }) {
+      $('overlay').classList.add('show');
+      $('overlayTitle').textContent = title;
+      $('overlaySubtitle').textContent = subtitle;
+      $('overlayBody').innerHTML = body;
+      $('overlayInput').value = '';
+      $('overlayInput').type = type;
+      $('overlayInput').placeholder = placeholder;
+      $('overlayInput').classList.toggle('hidden', type === 'none');
+      $('overlayPrimary').textContent = primaryText;
+      $('overlaySecondary').textContent = secondaryText;
+      $('overlaySecondary').classList.toggle('hidden', !allowCancel);
+
+      return new Promise((resolve, reject) => {
+        state.currentPromptResolve = resolve;
+        state.currentPromptReject = reject;
+        state.currentPromptMode = type;
+        const finish = (val) => {
+          cleanup();
+          resolve(val);
+        };
+        const cancel = () => {
+          cleanup();
+          reject(new Error('cancelled'));
+        };
+        const onPrimary = () => finish(type === 'none' ? '' : $('overlayInput').value);
+        const onSecondary = () => cancel();
+        const onKey = (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onPrimary();
+          }
+        };
+        function cleanup() {
+          $('overlayPrimary').removeEventListener('click', onPrimary);
+          $('overlaySecondary').removeEventListener('click', onSecondary);
+          $('overlayInput').removeEventListener('keydown', onKey);
+          $('overlay').classList.remove('show');
+          state.currentPromptResolve = null;
+          state.currentPromptReject = null;
+          state.currentPromptMode = null;
+        }
+        $('overlayPrimary').addEventListener('click', onPrimary);
+        $('overlaySecondary').addEventListener('click', onSecondary);
+        $('overlayInput').addEventListener('keydown', onKey);
+        setTimeout(() => { if (type !== 'none') $('overlayInput').focus(); }, 50);
+      });
+    }
+
+    async function secureInput(promptText) {
+      await promptModal({
+        title: '🔔 Nhắm mắt lại',
+        subtitle: promptText,
+        body: 'Những người khác vui lòng nhắm mắt. Màn hình sẽ chờ bạn xác nhận để tiếp tục.',
+        type: 'none',
+        primaryText: 'Ấn Enter / OK',
+      });
+    }
+
+    async function revealRoleToPlayer(player) {
+      await promptModal({
+        title: `🔔 Mời ${player.name} xem vai`,
+        subtitle: 'Những người khác vui lòng nhắm mắt.',
+        body: `<div><strong>Vai của bạn là:</strong> <span style="font-size:22px;color:var(--warning)"> ${escapeHtml(player.role.toUpperCase())} </span></div><div style="margin-top:10px">Ghi nhớ vai và bấm OK để sang người tiếp theo.</div>`,
+        type: 'none',
+        primaryText: 'Tôi đã xem',
+      });
+    }
+
+    async function askAlivePlayer(promptText, { allowEmpty = false, currentMirrorInfo = '' } = {}) {
+      const names = getAlivePlayers().map(p => p.name).join(', ');
+      const result = await promptModal({
+        title: promptText,
+        subtitle: currentMirrorInfo,
+        body: `<div class="small">Người còn sống: ${escapeHtml(names)}</div>`,
+        placeholder: 'Nhập đúng tên người chơi',
+        type: 'text',
+        allowCancel: allowEmpty,
+        primaryText: 'Xác nhận',
+        secondaryText: 'Bỏ qua',
+      }).catch(() => '');
+      const text = String(result || '').trim();
+      if (!text) return null;
+      return getPlayerIndexByName(text, true);
+    }
+
+    async function askYesNo(promptText, extraText = '') {
+      const res = await promptModal({
+        title: promptText,
+        subtitle: extraText,
+        body: 'Nhập y/yes/có để đồng ý, n/no/không để từ chối.',
+        placeholder: 'y / n',
+        type: 'text',
+        primaryText: 'Xác nhận',
+        allowCancel: false,
+      });
+      return yesLike(res);
+    }
+
+    async function setupGame() {
+      state.players = buildPlayers();
+      if (!state.players) return false;
+      state.nightCount = 0;
+      state.witchHeal = true;
+      state.witchPoison = true;
+      state.extraKillNextNight = false;
+      state.isCursed = false;
+      state.pendingHunterKill = null;
+      state.lastProtected = null;
+      state.gameLogs = [];
+      state.running = true;
+      state.phase = 'reveal';
+      state.mirrorIndex = state.players.findIndex(p => p.role === 'Gương' && p.isAlive);
+      state.mirrorTargetIndex = null;
+      renderLogs();
+      renderPlayers();
+      renderStatus('Game đã sẵn sàng.', 'Đang chuyển sang phần xem vai riêng tư từng người.');
+      log('--- SETUP GAME ---');
+      log(`Tổng số người chơi: ${state.players.length}`);
+      log('Vai trò đã được phân bổ.');
+      for (const p of state.players) {
+        await revealRoleToPlayer(p);
+      }
+      renderStatus('Đã xem vai xong.', 'Game bắt đầu vào đêm đầu tiên.');
+      return true;
+    }
+
+    async function nightPhase() {
+      state.nightCount += 1;
+      log(`\n--- ĐÊM ${state.nightCount} ---`);
+      renderStatus(`🌙 Đêm thứ ${state.nightCount} bắt đầu`, 'Tất cả nhắm mắt lại!');
+      await promptModal({
+        title: `🌙 ĐÊM THỨ ${state.nightCount} BẮT ĐẦU`,
+        subtitle: 'Tất cả người chơi nhắm mắt lại.',
+        body: 'Bấm OK để đi qua từng vai đúng thứ tự như bản Python.',
+        type: 'none',
+        primaryText: 'Bắt đầu đêm',
+      });
+
+      const intentWolfBites = [];
+      let intentProtected = null;
+      let intentPoisoned = null;
+      let intentWitchSaved = false;
+      let intentDisabledPlayer = null;
+      state.currentNightDeaths = new Set();
+      state.currentNightDeathEvents = [];
+
+      const mirrorIndex = state.players.findIndex(p => p.role === 'Gương' && p.isAlive);
+      let mirrorTargetIndex = null;
+      const hasMirror = state.players.some(p => p.role === 'Gương');
+
+      if (hasMirror) {
+        await secureInput('GƯƠNG thức dậy');
+        if (mirrorIndex !== -1) {
+          while (true) {
+            const idx = await askAlivePlayer('Chào Gương, chọn người phản chiếu:', { allowEmpty: false });
+            if (idx !== null && idx !== mirrorIndex) {
+              mirrorTargetIndex = idx;
+              state.players[idx].markedByMirror = true;
+              log(`Gương soi ${state.players[idx].name}`);
+              break;
+            }
+            await promptModal({
+              title: 'Lỗi',
+              subtitle: 'Không tìm thấy người chơi hoặc tên không hợp lệ!',
+              body: 'Bấm OK để nhập lại.',
+              type: 'none',
+              primaryText: 'Nhập lại',
+            });
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      if (state.players.some(p => p.role === 'Bitch')) {
+        await secureInput('BITCH thức dậy');
+        const bitchIndex = state.players.findIndex(p => p.role === 'Bitch' && p.isAlive);
+        if (bitchIndex !== -1) {
+          const idx = await askAlivePlayer('Ngủ với ai (Nhập tên):', { allowEmpty: true, currentMirrorInfo: hasMirror ? 'Nếu có Gương, mục tiêu có thể bị phản chiếu.' : '' });
+          if (idx !== null) {
+            intentDisabledPlayer = reflect(idx, mirrorIndex, mirrorTargetIndex);
+            let logMsg = `Bitch ngủ với ${state.players[idx].name}`;
+            if (hasMirror) logMsg += ` (Ảnh hưởng ${state.players[intentDisabledPlayer].name})`;
+            log(logMsg);
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      if (state.players.some(p => p.role === 'Cupid') && state.nightCount === 1) {
+        await secureInput('CUPID thức dậy');
+        const cupidIndex = state.players.findIndex(p => p.role === 'Cupid' && p.isAlive);
+        if (cupidIndex !== -1 && cupidIndex !== intentDisabledPlayer) {
+          const p1 = await askAlivePlayer('Nối người 1 (Tên):');
+          const p2 = await askAlivePlayer('Nối người 2 (Tên):');
+          if (p1 !== null && p2 !== null && p1 !== p2) {
+            const p1Final = reflect(p1, mirrorIndex, mirrorTargetIndex);
+            const p2Final = reflect(p2, mirrorIndex, mirrorTargetIndex);
+            state.players[p1Final].linkedWith = p2Final;
+            state.players[p2Final].linkedWith = p1Final;
+            let logMsg = `Cupid nối ${state.players[p1].name} và ${state.players[p2].name}`;
+            if (hasMirror) logMsg += ` (Thực tế: ${state.players[p1Final].name} - ${state.players[p2Final].name})`;
+            log(logMsg);
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      await secureInput('MA SÓI thức dậy');
+      const activeWolves = state.players.filter(p => p.isAlive && p.role.includes('Sói') && state.players.indexOf(p) !== intentDisabledPlayer);
+      if (activeWolves.length) {
+        const num = state.extraKillNextNight ? 2 : 1;
+        state.extraKillNextNight = false;
+        for (let i = 0; i < num; i++) {
+          const idx = await askAlivePlayer(`Cắn người ${i + 1} (Tên):`);
+          if (idx !== null) {
+            const res = reflect(idx, mirrorIndex, mirrorTargetIndex);
+            intentWolfBites.push(res);
+            let logMsg = `Sói cắn ${state.players[idx].name}`;
+            if (hasMirror) logMsg += ` (Phản chiếu vào ${state.players[res].name})`;
+            log(logMsg);
+          }
+        }
+      }
+      await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+
+      if (state.players.some(p => p.role === 'Phù Thủy')) {
+        await secureInput('PHÙ THỦY thức dậy');
+        const witchIndex = state.players.findIndex(p => p.role === 'Phù Thủy' && p.isAlive);
+        const canAct = witchIndex !== -1 && witchIndex !== intentDisabledPlayer && !state.isCursed;
+        if (canAct) {
+          const victim = intentWolfBites.length ? state.players[intentWolfBites[0]] : null;
+          if (state.witchHeal) {
+            await promptModal({
+              title: 'Người bị cắn',
+              subtitle: `Người bị cắn là: ${victim ? victim.name : 'Không ai'}`,
+              body: 'Bạn có muốn cứu không?',
+              type: 'none',
+              primaryText: 'Tiếp tục',
+            });
+            if (victim) {
+              const save = await askYesNo('CỨU?');
+              if (save) {
+                intentWitchSaved = true;
+                state.witchHeal = false;
+                log(`Phù thủy cứu ${victim.name}`);
+              }
+            }
+          } else {
+            await promptModal({
+              title: 'Bình cứu đã hết',
+              subtitle: 'Bạn đã hết bình cứu, không thể biết ai bị cắn.',
+              body: 'Bấm OK để tiếp tục.',
+              type: 'none',
+              primaryText: 'Tiếp tục',
+            });
+          }
+
+          if (state.witchPoison) {
+            const poisonIdx = await askAlivePlayer('ĐỘC ai (Tên - Enter bỏ qua):', { allowEmpty: true });
+            if (poisonIdx !== null) {
+              intentPoisoned = reflect(poisonIdx, mirrorIndex, mirrorTargetIndex);
+              state.witchPoison = false;
+              let logMsg = `Phù thủy độc ${state.players[poisonIdx].name}`;
+              if (hasMirror) logMsg += ` (Vào ${state.players[intentPoisoned].name})`;
+              log(logMsg);
+            }
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      if (state.players.some(p => p.role === 'Bảo Vệ')) {
+        await secureInput('BẢO VỆ thức dậy');
+        const bodyguardIndex = state.players.findIndex(p => p.role === 'Bảo Vệ' && p.isAlive);
+        if (bodyguardIndex !== -1 && bodyguardIndex !== intentDisabledPlayer && !state.isCursed) {
+          const idx = await askAlivePlayer('Bảo vệ ai (Tên):');
+          if (idx !== null) {
+            const res = reflect(idx, mirrorIndex, mirrorTargetIndex);
+            if (res !== state.lastProtected) {
+              intentProtected = res;
+              let logMsg = `Bảo vệ gác cho ${state.players[idx].name}`;
+              if (hasMirror) logMsg += ` (Thực tế gác ${state.players[res].name})`;
+              log(logMsg);
+            }
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      if (state.players.some(p => p.role === 'Tiên Tri')) {
+        await secureInput('TIÊN TRI thức dậy');
+        const seerIndex = state.players.findIndex(p => p.role === 'Tiên Tri' && p.isAlive);
+        if (seerIndex !== -1 && seerIndex !== intentDisabledPlayer && !state.isCursed) {
+          const idx = await askAlivePlayer('Soi ai (Tên):');
+          if (idx !== null) {
+            const res = reflect(idx, mirrorIndex, mirrorTargetIndex);
+            const resPlayer = state.players[res];
+            const resSide = (resPlayer.role.includes('Sói') || resPlayer.isTransformed) ? 'SÓI' : 'DÂN';
+            await promptModal({
+              title: 'Kết quả soi',
+              subtitle: `Kết quả soi ${state.players[idx].name}: ${resSide}`,
+              body: 'Bấm OK để tiếp tục.',
+              type: 'none',
+              primaryText: 'Tiếp tục',
+            });
+            let logMsg = `Tiên tri soi ${state.players[idx].name} ra ${resSide}`;
+            if (hasMirror) logMsg += ` (Do phản chiếu từ ${resPlayer.name})`;
+            log(logMsg);
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      if (state.players.some(p => p.role === 'Thợ Săn')) {
+        await secureInput('THỢ SĂN thức dậy');
+        const hunterIndex = state.players.findIndex(p => p.role === 'Thợ Săn' && p.isAlive);
+        if (hunterIndex !== -1 && hunterIndex !== intentDisabledPlayer && !state.isCursed) {
+          const idx = await askAlivePlayer('Ngắm bắn ai (Tên):');
+          if (idx !== null) {
+            const res = reflect(idx, mirrorIndex, mirrorTargetIndex);
+            state.players[hunterIndex].hunterTarget = res;
+            let logMsg = `Thợ săn ngắm ${state.players[idx].name}`;
+            if (hasMirror) logMsg += ` (Thực tế ngắm ${state.players[res].name})`;
+            log(logMsg);
+          }
+        }
+        await promptModal({ title: 'Xong', subtitle: 'Hãy nhắm mắt lại.', body: 'Bấm OK để tiếp tục.', type: 'none', primaryText: 'Tiếp tục' });
+      }
+
+      state.lastProtected = intentProtected;
+      const finalDeaths = [];
+      for (let i = 0; i < intentWolfBites.length; i++) {
+        const v = intentWolfBites[i];
+        if ((i === 0 && intentWitchSaved) || (v === intentProtected)) {
+          log(`-> ${state.players[v].name} thoát chết đêm nay nhờ Bảo vệ/Phù thủy.`);
+          continue;
+        }
+        if (state.players[v].role === '50/50' && v !== intentDisabledPlayer) {
+          state.players[v].isTransformed = true;
+          state.players[v].side = 'Sói';
+          log(`-> ${state.players[v].name} bị cắn và hóa Sói (50/50)!`);
+        } else {
+          finalDeaths.push(v);
+        }
+      }
+      if (intentPoisoned !== null) finalDeaths.push(intentPoisoned);
+
+      const nightVictims = [...new Set(state.currentNightDeathEvents)];
+      for (const idx of finalDeaths) {
+        if (!nightVictims.includes(idx)) nightVictims.push(idx);
+      }
+      for (const idx of nightVictims) kill(idx, 'Chết trong đêm', false, true);
+      if (state.pendingHunterKill !== null) {
+        const hk = state.pendingHunterKill;
+        kill(hk, 'Thợ Săn kéo', false, true);
+        if (!nightVictims.includes(hk)) nightVictims.push(hk);
+        state.pendingHunterKill = null;
+      }
+
+      await promptModal({
+        title: '☀️ TRỜI ĐÃ SÁNG',
+        subtitle: 'Mời mọi người mở mắt!',
+        body: nightVictims.length ? `Sáng nay làng phát hiện ${nightVictims.length} nạn nhân.` : 'Một đêm bình yên, không ai qua đời.',
+        type: 'none',
+        primaryText: 'Xem kết quả',
+      });
+
+      if (nightVictims.length) {
+        log(`☀️ Sáng nay, làng phát hiện ${nightVictims.length} nạn nhân qua đời:`);
+        for (const idx of nightVictims) log(` - ${state.players[idx].name}`);
+      } else {
+        log('☀️ Một đêm bình yên, không ai qua đời.');
+      }
+      renderPlayers();
+      renderStatus(`Sáng sau đêm ${state.nightCount}`, 'Bắt đầu phần ban ngày.');
+      state.currentNightDeaths = null;
+      state.currentNightDeathEvents = null;
+    }
+
+    function showFinalReport() {
+      let out = [];
+      out.push('========================= TỔNG KẾT TRẬN ĐẤU =========================');
+      out.push('');
+      out.push('1. VAI TRÒ BAN ĐẦU:');
+      for (const p of state.players) {
+        const status = p.isAlive ? 'SỐNG' : 'CHẾT';
+        out.push(`   • ${p.name.padEnd(15)}: ${p.role.padEnd(15)} | Kết thúc: ${status}`);
+      }
+      out.push('');
+      out.push('2. CHI TIẾT DIỄN BIẾN:');
+      for (const logLine of state.gameLogs) out.push(`   ${logLine}`);
+      out.push('====================================================================');
+      alert(out.join('\n'));
+    }
+
+    function checkVictory() {
+      const alives = state.players.filter(p => p.isAlive);
+      const wolves = alives.filter(p => p.side === 'Sói' || p.isTransformed);
+      const villagers = alives.filter(p => p.side === 'Dân' && !p.isTransformed);
+      const mirrorAlive = alives.filter(p => p.role === 'Gương');
+
+      let victory = false;
+      if (mirrorAlive.length) {
+        const m = mirrorAlive[0];
+        const others = alives.filter(p => p !== m);
+        if (others.length && others.every(p => p.markedByMirror)) {
+          alert(`🪞 GƯƠNG (${m.name}) CHIẾN THẮNG TUYỆT ĐỐI!`);
+          victory = true;
+        }
+      } else if (!villagers.length && !mirrorAlive.length) {
+        alert('🐺 PHE MA SÓI CHIẾN THẮNG!');
+        victory = true;
+      } else if (!wolves.length && !mirrorAlive.length) {
+        alert('🏆 PHE DÂN LÀNG CHIẾN THẮNG!');
+        victory = true;
+      }
+
+      if (victory) {
+        showFinalReport();
+        state.running = false;
+        state.phase = 'ended';
+        renderStatus('Game kết thúc.', 'Bạn có thể bấm Làm lại để chơi ván mới.');
+        $('daySkipBtn').classList.add('hidden');
+        $('nextStepBtn').classList.add('hidden');
+        $('showReportBtn').classList.remove('hidden');
+        return true;
+      }
+      return false;
+    }
+
+    async function dayPhase() {
+      renderStatus(`☀️ Ban ngày sau đêm ${state.nightCount}`, 'Cả làng thảo luận và treo cổ một người.');
+      const aliveNames = getAlivePlayers().map(p => p.name).join(', ');
+      const idx = await askAlivePlayer('BAN NGÀY: Treo cổ ai (Nhập đúng tên)?', { allowEmpty: true, currentMirrorInfo: `Người còn sống: ${aliveNames}` });
+      if (idx !== null) {
+        log(`BAN NGÀY: Làng treo cổ ${state.players[idx].name}`);
+        kill(idx, 'Treo cổ', true, false);
+      } else {
+        await promptModal({
+          title: 'Lỗi',
+          subtitle: 'Không tìm thấy người chơi này hoặc người chơi đã chết!',
+          body: 'Bấm OK để tiếp tục.',
+          type: 'none',
+          primaryText: 'Tiếp tục',
+        });
+      }
+    }
+
+    async function gameLoop() {
+      while (state.running) {
+        if (checkVictory()) break;
+        await nightPhase();
+        if (checkVictory()) break;
+        await dayPhase();
+      }
+    }
+
+    $('startBtn').addEventListener('click', async () => {
+      try {
+        if (state.running) return;
+        const ok = await setupGame();
+        if (ok) {
+          $('nextStepBtn').classList.add('hidden');
+          $('daySkipBtn').classList.add('hidden');
+          $('showReportBtn').classList.add('hidden');
+          await gameLoop();
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Có lỗi khi bắt đầu game. Kiểm tra lại dữ liệu nhập vào.');
+      }
+    });
+
+    $('fillDemoBtn').addEventListener('click', () => {
+      $('numPlayers').value = 8;
+      $('namesInput').value = 'An\nBinh\nChi\nDung\nEm\nPhuc\nGiang\nHoa';
+      $('rolesInput').value = '1 Soi, 1 Witch, 1 Seer, 1 Bodyguard, 1 Hunter, 1 Cupid, 1 Mirror';
+    });
+
+    $('resetBtn').addEventListener('click', () => {
+      location.reload();
+    });
+
+    $('showReportBtn').addEventListener('click', () => showFinalReport());
+
+    renderLogs();
+    renderPlayers();
+    renderStatus('Chưa bắt đầu.', 'Nhập số người chơi, danh sách tên, và vai trò rồi bấm Bắt đầu.');
+  </script>
+</body>
+</html>
