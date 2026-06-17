@@ -197,7 +197,8 @@
     .list {
       display: grid;
       gap: 8px;
-      max-height: 460px;
+      /* Use viewport‑relative height so it adapts on small screens */
+      max-height: 60vh;
       overflow: auto;
       padding-right: 4px;
     }
@@ -253,15 +254,18 @@
       position: fixed;
       inset: 0;
       background: rgba(3, 5, 14, 0.94);
-      display: none;
-      z-index: 9999;
+      display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
     .overlay.show {
-      display: flex;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .overlay-card {
@@ -342,6 +346,15 @@
         width: 100%;
       }
     }
+
+    /* Focus outline for keyboard navigation */
+    button:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
   </style>
 </head>
 
@@ -401,7 +414,7 @@
     <section class="card">
       <h2>Nhật ký</h2>
       <div class="content">
-        <div class="log" id="logBox"></div>
+        <div class="log" id="logBox" aria-live="polite"></div>
       </div>
     </section>
 
@@ -526,36 +539,50 @@
         .replace(/'/g, '&#39;');
     }
 
+    // Utility to batch DOM updates for smoother UI
+    function raf(callback) {
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(callback);
+      } else {
+        setTimeout(callback, 0);
+      }
+    }
+
     function log(message) {
       state.gameLogs.push(message);
       renderLogs();
     }
 
     function renderLogs() {
-      $('logBox').textContent = state.gameLogs.join('\n');
-      $('logBox').scrollTop = $('logBox').scrollHeight;
+      raf(() => {
+        const box = $('logBox');
+        box.textContent = state.gameLogs.join('\n');
+        box.scrollTop = box.scrollHeight;
+      });
     }
 
     function renderPlayers() {
-      const box = $('playersList');
-      box.innerHTML = '';
-      state.players.forEach((p) => {
-        const div = document.createElement('div');
-        div.className = 'player-item' + (p.isAlive ? '' : ' dead');
-        let roleName = p.role;
-        if (p.role === '50/50' && p.isAlive) {
-          roleName = `50/50 (${p.isTransformed ? 'Sói' : 'Dân Làng'})`;
-        }
-        if (p.linkedWith !== null) roleName += ' (Cặp đôi)';
-        if (p.markedByMirror) roleName += ' (Đã bị gương soi)';
-        div.innerHTML = `
-          <div>
-            <div><strong>${escapeHtml(p.name)}</strong></div>
-            <div class="player-meta">Vai: ${escapeHtml(roleName)} · ${p.isAlive ? 'SỐNG' : 'ĐÃ CHẾT'}</div>
-          </div>
-          <div class="pill">${escapeHtml(p.side)}</div>
-        `;
-        box.appendChild(div);
+      raf(() => {
+        const box = $('playersList');
+        box.innerHTML = '';
+        state.players.forEach((p) => {
+          const div = document.createElement('div');
+          div.className = 'player-item' + (p.isAlive ? '' : ' dead');
+          let roleName = p.role;
+          if (p.role === '50/50' && p.isAlive) {
+            roleName = `50/50 (${p.isTransformed ? 'Sói' : 'Dân Làng'})`;
+          }
+          if (p.linkedWith !== null) roleName += ' (Cặp đôi)';
+          if (p.markedByMirror) roleName += ' (Đã bị gương soi)';
+          div.innerHTML = `
+            <div>
+              <div><strong>${escapeHtml(p.name)}</strong></div>
+              <div class="player-meta">Vai: ${escapeHtml(roleName)} · ${p.isAlive ? 'SỐNG' : 'ĐÃ CHẾT'}</div>
+            </div>
+            <div class="pill">${escapeHtml(p.side)}</div>
+          `;
+          box.appendChild(div);
+        });
       });
     }
 
@@ -757,7 +784,8 @@
       return ['y', 'yes', 'co', 'ok', '1', 'true'].includes(n);
     }
 
-    function kill(playerIndex, reason, isDaytime = false, silent = false) {
+    // Added hideRole flag to optionally suppress role information in logs/alerts (used for daytime voting)
+    function kill(playerIndex, reason, isDaytime = false, silent = false, hideRole = false) {
       const player = state.players[playerIndex];
       if (!player || !player.isAlive) return;
       player.lives -= 1;
@@ -771,8 +799,14 @@
         if (state.currentNightDeaths) state.currentNightDeaths.add(playerIndex);
         if (state.currentNightDeathEvents) state.currentNightDeathEvents.push(playerIndex);
       }
-      log(`-> ${player.name} (${player.role}) ĐÃ CHẾT do ${reason}.`);
-      if (isDaytime && !silent) alert(`💀 ${player.name} (${player.role}) ĐÃ CHẾT! [${reason}]`);
+      // If hideRole is true (e.g., daytime vote), omit the role from the log/alert.
+      if (hideRole) {
+        log(`-> ${player.name} ĐÃ CHẾT do ${reason}.`);
+        if (isDaytime && !silent) alert(`💀 ${player.name} ĐÃ CHẾT! [${reason}]`);
+      } else {
+        log(`-> ${player.name} (${player.role}) ĐÃ CHẾT do ${reason}.`);
+        if (isDaytime && !silent) alert(`💀 ${player.name} (${player.role}) ĐÃ CHẾT! [${reason}]`);
+      }
       if (player.role === 'Già Làng') state.isCursed = true;
       if (player.role === 'Sói Con') state.extraKillNextNight = true;
       if (player.linkedWith !== null && state.players[player.linkedWith]?.isAlive) {
@@ -1035,10 +1069,17 @@
         state.pendingHunterKill = null;
       }
 
+      // Build a friendly message for the sunrise modal, including names of victims when any.
+      const sunriseBody = nightVictims.length
+        ? `Sáng nay làng phát hiện ${nightVictims.length} nạn nhân: ${nightVictims
+          .map((i) => state.players[i].name)
+          .join(', ')}`
+        : 'Một đêm bình yên, không ai qua đời.';
+
       await promptModal({
         title: '☀️ TRỜI ĐÃ SÁNG',
         subtitle: 'Mời mọi người mở mắt!',
-        body: nightVictims.length ? `Sáng nay làng phát hiện ${nightVictims.length} nạn nhân.` : 'Một đêm bình yên, không ai qua đời.',
+        body: sunriseBody,
         type: 'none',
         primaryText: 'Xem kết quả',
       });
@@ -1111,7 +1152,8 @@
       const idx = await askAlivePlayer('BAN NGÀY: Treo cổ ai (Nhập đúng tên)?', { allowEmpty: true, currentMirrorInfo: `Người còn sống: ${aliveNames}` });
       if (idx !== null) {
         log(`BAN NGÀY: Làng treo cổ ${state.players[idx].name}`);
-        kill(idx, 'Treo cổ', true, false);
+        // Hide role information during daytime execution (voting)
+        kill(idx, 'Treo cổ', true, false, true);
       } else {
         log('BAN NGÀY: Bỏ qua treo cổ.');
       }
