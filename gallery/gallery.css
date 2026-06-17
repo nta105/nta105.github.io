@@ -25,42 +25,6 @@ body {
     padding: 60px 15px 80px;
 }
 
-/* Filter Buttons */
-.gallery-filters {
-    margin-bottom: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.filter-btn {
-    padding: 10px 28px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 50px;
-    color: rgba(255, 255, 255, 0.7);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover {
-    background: rgba(201, 168, 76, 0.1);
-    border-color: rgba(201, 168, 76, 0.3);
-    color: #c9a84c;
-}
-
-.filter-btn.active {
-    background: linear-gradient(135deg, #c9a84c, #e8c86e);
-    border-color: transparent;
-    color: #0a0a0a;
-    font-weight: 600;
-}
-
 /* Masonry-style Gallery Grid */
 .gallery-full-grid {
     display: grid;
@@ -147,18 +111,6 @@ body {
     letter-spacing: 2px;
 }
 
-/* Fade-in animation for filtered items */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
 /* Responsive */
 @media (max-width: 991px) {
     .gallery-full-grid {
@@ -187,10 +139,5 @@ body {
 
     .gallery-hero .hero-title {
         font-size: 2.2rem;
-    }
-
-    .filter-btn {
-        padding: 8px 20px;
-        font-size: 0.8rem;
     }
 }
