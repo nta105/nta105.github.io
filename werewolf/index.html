@@ -516,6 +516,7 @@
       currentPromptResolve: null,
       currentPromptReject: null,
       currentPromptMode: null,
+      pendingDeathMessages: [],
     };
 
     function normalizeText(s) {
@@ -624,7 +625,7 @@
       const rawRoles = $('rolesInput').value;
 
       if (!Number.isInteger(numPlayers) || numPlayers < 2) {
-        alert('Nhập tổng số người chơi hợp lệ.');
+        showSimplePrompt({ title: 'Lỗi nhập liệu', body: 'Nhập tổng số người chơi hợp lệ (tối thiểu 2).', primaryText: 'OK' });
         return null;
       }
       while (names.length < numPlayers) names.push(`PLAYER_${names.length + 1}`);
@@ -789,10 +790,10 @@
       }
       if (hideRole) {
         log(`-> ${player.name} ĐÃ CHẾT do ${reason}.`);
-        if (isDaytime && !silent) alert(`💀 ${player.name} ĐÃ CHẾT! [${reason}]`);
+        if (isDaytime && !silent) state.pendingDeathMessages.push(`💀 ${player.name} ĐÃ CHẾT! [${reason}]`);
       } else {
         log(`-> ${player.name} (${player.role}) ĐÃ CHẾT do ${reason}.`);
-        if (isDaytime && !silent) alert(`💀 ${player.name} (${player.role}) ĐÃ CHẾT! [${reason}]`);
+        if (isDaytime && !silent) state.pendingDeathMessages.push(`💀 ${player.name} (${player.role}) ĐÃ CHẾT! [${reason}]`);
       }
       if (player.role === 'Già Làng') state.isCursed = true;
       if (player.role === 'Sói Con') state.extraKillNextNight = true;
@@ -1256,50 +1257,54 @@
     // Victory check & day phase
     // ──────────────────────────────────────
     function showFinalReport() {
-      const out = [];
-      out.push('========================= TỔNG KẾT TRẬN ĐẤU =========================');
-      out.push('');
-      out.push('1. VAI TRÒ BAN ĐẦU:');
-      for (const p of state.players) {
-        out.push(`   • ${p.name.padEnd(15)}: ${p.role.padEnd(15)} | Kết thúc: ${p.isAlive ? 'SỐNG' : 'CHẾT'}`);
-      }
-      out.push('');
-      out.push('2. CHI TIẾT DIỄN BIẾN:');
-      for (const line of state.gameLogs) out.push(`   ${line}`);
-      out.push('====================================================================');
-      alert(out.join('\n'));
+      const rows = state.players.map(p =>
+        `<tr><td style="padding:6px 10px">${escapeHtml(p.name)}</td><td style="padding:6px 10px">${escapeHtml(p.role)}</td><td style="padding:6px 10px;color:${p.isAlive ? 'var(--accent-2)' : 'var(--danger)'}">${p.isAlive ? 'SỐNG' : 'CHẾT'}</td></tr>`
+      ).join('');
+      const logHtml = state.gameLogs.map(l => escapeHtml(l)).join('<br>');
+      showSimplePrompt({
+        title: '📋 TỔNG KẾT TRẬN ĐẤU',
+        subtitle: `${state.nightCount} đêm đã qua`,
+        body: `<div style="margin-bottom:14px"><strong>Vai trò:</strong><table style="width:100%;margin-top:8px;font-size:14px;border-collapse:collapse">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.1)"><th style="padding:6px 10px;text-align:left">Tên</th><th style="padding:6px 10px;text-align:left">Vai</th><th style="padding:6px 10px;text-align:left">Trạng thái</th></tr>
+          ${rows}</table></div>
+          <div><strong>Diễn biến:</strong><div style="margin-top:8px;max-height:200px;overflow:auto;font-size:12px;font-family:monospace;line-height:1.5;padding:10px;border-radius:10px;background:rgba(0,0,0,0.3)">${logHtml}</div></div>`,
+        primaryText: 'Đóng',
+      });
     }
 
-    function checkVictory() {
+    async function checkVictory() {
       const alives = state.players.filter(p => p.isAlive);
       const wolves = alives.filter(p => p.side === 'Sói' || p.isTransformed);
       const villagers = alives.filter(p => p.side === 'Dân' && !p.isTransformed);
       const mirrorAlive = alives.filter(p => p.role === 'Gương');
 
-      let victory = false;
+      let victoryMsg = null;
       if (mirrorAlive.length) {
         const m = mirrorAlive[0];
         const others = alives.filter(p => p !== m);
         if (others.length && others.every(p => p.markedByMirror)) {
-          alert(`🪞 GƯƠNG (${m.name}) CHIẾN THẮNG TUYỆT ĐỐI!`);
-          victory = true;
+          victoryMsg = `🪞 GƯƠNG (${m.name}) CHIẾN THẮNG TUYỆT ĐỐI!`;
         }
       } else if (!villagers.length) {
-        alert('🐺 PHE MA SÓI CHIẾN THẮNG!');
-        victory = true;
+        victoryMsg = '🐺 PHE MA SÓI CHIẾN THẮNG!';
       } else if (!wolves.length) {
-        alert('🏆 PHE DÂN LÀNG CHIẾN THẮNG!');
-        victory = true;
+        victoryMsg = '🏆 PHE DÂN LÀNG CHIẾN THẮNG!';
       }
 
-      if (victory) {
-        showFinalReport();
+      if (victoryMsg) {
+        await showSimplePrompt({
+          title: 'KẾT THÚC TRẬN ĐẤU',
+          subtitle: '',
+          body: `<div style="text-align:center;font-size:24px;padding:20px 0">${escapeHtml(victoryMsg)}</div>`,
+          primaryText: 'Xem tổng kết',
+        });
         state.running = false;
         state.phase = 'ended';
         renderStatus('Game kết thúc.', 'Bạn có thể bấm Làm lại để chơi ván mới.');
         $('daySkipBtn').classList.add('hidden');
         $('nextStepBtn').classList.add('hidden');
         $('showReportBtn').classList.remove('hidden');
+        showFinalReport();
         return true;
       }
       return false;
@@ -1307,6 +1312,7 @@
 
     async function dayPhase() {
       renderStatus(`☀️ Ban ngày sau đêm ${state.nightCount}`, 'Cả làng thảo luận và treo cổ một người.');
+      state.pendingDeathMessages = [];
       const choice = await awaitPlayerChoice({
         title: 'BAN NGÀY: Treo cổ ai?',
         subtitle: '',
@@ -1318,8 +1324,30 @@
         const globalIdx = state.players.indexOf(chosenPlayer);
         log(`BAN NGÀY: Làng treo cổ ${chosenPlayer.name}`);
         kill(globalIdx, 'Treo cổ', true, false, true);
+        if (state.pendingDeathMessages.length) {
+          await showSimplePrompt({
+            title: '💀 Kết quả treo cổ',
+            subtitle: '',
+            body: state.pendingDeathMessages.map(m => `<div style="margin-bottom:8px">${escapeHtml(m)}</div>`).join(''),
+            primaryText: 'Tiếp tục',
+          });
+        }
       } else {
         log('BAN NGÀY: Bỏ qua treo cổ.');
+      }
+      // Handle pending hunter kill from daytime
+      if (state.pendingHunterKill !== null) {
+        const hk = state.pendingHunterKill;
+        state.pendingHunterKill = null;
+        kill(hk, 'Thợ Săn kéo', true, false, false);
+        if (state.pendingDeathMessages.length) {
+          await showSimplePrompt({
+            title: '🔫 Thợ Săn kéo theo!',
+            subtitle: '',
+            body: state.pendingDeathMessages.map(m => `<div style="margin-bottom:8px">${escapeHtml(m)}</div>`).join(''),
+            primaryText: 'Tiếp tục',
+          });
+        }
       }
     }
 
@@ -1328,9 +1356,9 @@
     // ──────────────────────────────────────
     async function gameLoop() {
       while (state.running) {
-        if (checkVictory()) break;
+        if (await checkVictory()) break;
         await nightPhase();
-        if (checkVictory()) break;
+        if (await checkVictory()) break;
         await dayPhase();
       }
     }
@@ -1350,7 +1378,7 @@
         }
       } catch (e) {
         console.error(e);
-        alert('Có lỗi khi bắt đầu game. Kiểm tra lại dữ liệu nhập vào.');
+        showSimplePrompt({ title: 'Lỗi', body: 'Có lỗi khi bắt đầu game. Kiểm tra lại dữ liệu nhập vào.', primaryText: 'OK' });
       }
     });
 
@@ -1361,7 +1389,7 @@
     });
 
     $('resetBtn').addEventListener('click', () => location.reload());
-    $('showReportBtn').addEventListener('click', () => showFinalReport());
+    $('showReportBtn').addEventListener('click', () => { showFinalReport(); });
 
     // initial render
     renderLogs();
