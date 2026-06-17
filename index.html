@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -35,40 +36,51 @@
                         <a class="nav-link" href="#featured-video">Performance</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="gallery/">Gallery</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#donate">Support</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact-info">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#connect">Social Media</a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <header class="text-center text-white">
-        <div class="container py-4">
-            <h1 class="display-4">Thien An Nguyen</h1>
-            <p class="lead">Professional Guitarist & Music Instructor</p>
-            <img src="images/Guitar (media 2).png" alt="Thien An Nguyen" class="img-fluid my-4" loading="lazy">
+    <header class="hero-section" id="home">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content text-center text-white">
+            <p class="hero-subtitle" data-aos="fade-down" data-aos-delay="100">Professional Guitarist & Music Instructor</p>
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">Thien An Nguyen</h1>
+            <p class="hero-tagline" data-aos="fade-up" data-aos-delay="400">Bringing soulful melodies to the Bay Area and beyond</p>
+            <div class="hero-cta" data-aos="fade-up" data-aos-delay="600">
+                <a href="#featured-video" class="btn-hero-primary">Watch Performance</a>
+                <a href="#contact" class="btn-hero-secondary">Get in Touch</a>
+            </div>
+        </div>
+        <div class="hero-scroll-indicator">
+            <a href="#about"><i class="fas fa-chevron-down"></i></a>
         </div>
     </header>
 
     <div class="container mt-5">
         <main>
             <!-- About Me Section - Full width -->
-            <section id="about" class="mb-5">
+            <section id="about" class="mb-5" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>About Me</h2>
+                    <div class="section-divider"></div>
+                </div>
                 <div class="row align-items-center">
                     <!-- Profile Picture Column -->
-                    <div class="col-lg-4 text-center mb-4 mb-lg-0">
+                    <div class="col-lg-4 text-center mb-4 mb-lg-0" data-aos="fade-right" data-aos-delay="200">
                         <img src="images/profile.jpg" alt="Thien An Nguyen Profile" class="profile-image img-fluid mb-3"
                             loading="lazy">
                     </div>
                     <!-- About Me Content Column -->
-                    <div class="col-lg-8">
-                        <h2>About Me</h2>
+                    <div class="col-lg-8" data-aos="fade-left" data-aos-delay="300" data-aos="fade-left" data-aos-delay="300">
                         <p>Welcome! I'm Thien An Nguyen, a self-taught guitarist based in the vibrant Bay Area.</p>
                         <ul>
                             <li><strong>Background:</strong> I began my musical journey nearly a decade ago, using
@@ -97,8 +109,11 @@
             </section>
 
             <!-- Featured Video Section -->
-            <section id="featured-video" class="video-container mb-5">
-                <h2 class="text-center mb-4">Featured Performance</h2>
+            <section id="featured-video" class="video-container mb-5" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>Featured Performance</h2>
+                    <div class="section-divider"></div>
+                </div>
                 <div class="embed-responsive embed-responsive-16by9 video-wrapper">
                     <div id="video-overlay" class="video-overlay">
                         <button class="play-button">
@@ -113,13 +128,54 @@
                 </div>
                 <div class="text-center mt-3">
                     <h3>Live Performance at San Jose Museum of Arts (2024)</h3>
-                    <p>Explore more videos like this on my YouTube channel!</p>
+                    <p>Explore more videos like this on my <a href="https://www.youtube.com/nta105" target="_blank" rel="noopener noreferrer">YouTube channel</a>!</p>
+                </div>
+            </section>
+
+            <!-- Photo Gallery Highlights -->
+            <section id="gallery" class="mb-5" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>Gallery</h2>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Moments from performances, collaborations, and events</p>
+                </div>
+                <div class="gallery-grid gallery-highlights">
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100">
+                        <img src="images/gallery-1.jpg" alt="Performance highlight" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200">
+                        <img src="images/gallery-2.jpg" alt="Performance highlight" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300">
+                        <img src="images/gallery-3.jpg" alt="Performance highlight" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-item" data-aos="zoom-in" data-aos-delay="400">
+                        <img src="images/gallery-4.jpg" alt="Performance highlight" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="500">
+                    <a href="gallery/" class="btn-view-gallery">View Full Gallery <i class="fas fa-arrow-right ml-2"></i></a>
                 </div>
             </section>
 
             <!-- Support Section -->
-            <section id="donate" class="mb-5">
-                <h2 class="text-center">Support Me & My Music</h2>
+            <section id="donate" class="mb-5" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>Support Me & My Music</h2>
+                    <div class="section-divider"></div>
+                </div>
                 <p class="text-center">Your support helps me continue to create and share my music with the world. If
                     you'd like to contribute, you can donate via Venmo or Zelle. Every little bit helps and is greatly
                     appreciated!</p>
@@ -140,23 +196,67 @@
                 </div>
             </section>
 
-            <!-- Improved Contact and Social Media section -->
-            <div class="row mt-5">
-                <div class="col-md-4">
-                    <section id="contact-info" class="contact-card">
-                        <h2>Contact Information</h2>
-                        <div class="contact-details">
-                            <p><i class="fas fa-phone mr-2"></i>+1 (408) 639-3430</p>
-                            <p><i class="fas fa-envelope mr-2"></i><a
-                                    href="mailto:thienan.guitarist@email.com">thienan.guitarist@email.com</a></p>
-                        </div>
-                    </section>
+            <!-- Contact Form Section -->
+            <section id="contact" class="mb-5" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>Send Me a Message</h2>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Have a question, booking inquiry, or just want to say hello? Drop me a message!</p>
                 </div>
-                <div class="col-md-8">
-                    <section id="connect">
-                        <h2 class="text-center mb-4">Connect with Me</h2>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <form id="contact-form" action="https://formsubmit.co/thienan.guitarist@email.com" method="POST" class="contact-form">
+                            <!-- Honeypot for spam prevention -->
+                            <input type="text" name="_honey" style="display:none">
+                            <!-- Disable captcha redirect -->
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="_next" value="https://nta105.github.io/">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="name">Your Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="email">Your Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input type="text" class="form-control" id="subject" name="_subject" placeholder="Booking inquiry, lesson request, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn-submit">Send Message <i class="fas fa-paper-plane ml-2"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Info & Social Media section -->
+            <section id="connect" data-aos="fade-up">
+                <div class="section-header text-center mb-4">
+                    <h2>Connect with Me</h2>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-4 mb-4 mb-md-0">
+                        <div class="contact-info-card text-center">
+                            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                            <p>+1 (408) 639-3430</p>
+                        </div>
+                        <div class="contact-info-card text-center mt-3">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <p><a href="mailto:thienan.guitarist@email.com">thienan.guitarist@email.com</a></p>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
                         <div class="row justify-content-center">
-                            <!-- Facebook Section -->
+                            <!-- Facebook -->
                             <div class="col-sm-4 text-center">
                                 <div class="social-card">
                                     <a href="https://www.facebook.com/nguyenthienan95/" class="social-icon facebook"
@@ -166,8 +266,7 @@
                                     </a>
                                 </div>
                             </div>
-
-                            <!-- Instagram Section -->
+                            <!-- Instagram -->
                             <div class="col-sm-4 text-center">
                                 <div class="social-card">
                                     <a href="https://www.instagram.com/nguyenthienan95/" class="social-icon instagram"
@@ -177,8 +276,7 @@
                                     </a>
                                 </div>
                             </div>
-
-                            <!-- YouTube Section -->
+                            <!-- YouTube -->
                             <div class="col-sm-4 text-center">
                                 <div class="social-card">
                                     <a href="https://www.youtube.com/nta105" class="social-icon youtube"
@@ -189,18 +287,30 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        &copy; 2024 Thien An Nguyen. All Rights Reserved.
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">Thien An Nguyen</p>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/nguyenthienan95/" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/nguyenthienan95/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/nta105" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="footer-copy">&copy; 2024 Thien An Nguyen. All Rights Reserved.</p>
+            </div>
+        </div>
     </footer>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 800, once: true, offset: 100 });</script>
     <script>
         // Add active class to nav links based on scroll position
         document.addEventListener('DOMContentLoaded', function () {
