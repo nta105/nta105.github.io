@@ -5,21 +5,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Werewolf Game — Host Mode (Button Selection)</title>
+  <title>Ma Sói — Werewolf Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f1220;
-      --panel: #171b2e;
-      --panel-2: #1e2440;
-      --text: #e8ecff;
-      --muted: #aab3d8;
-      --accent: #7c8cff;
-      --accent-2: #4ad6a9;
-      --danger: #ff6b6b;
-      --warning: #ffd166;
-      --border: rgba(255, 255, 255, 0.08);
-      --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
+      --bg: #080b14;
+      --panel: rgba(12, 16, 30, 0.92);
+      --panel-2: rgba(18, 22, 40, 0.9);
+      --text: #d8dce8;
+      --muted: #7a83a6;
+      --accent: #6c8aff;
+      --blood: #c0392b;
+      --blood-light: #e74c3c;
+      --moon: #f0e6c0;
+      --moon-glow: rgba(240, 230, 192, 0.15);
+      --forest: #1a3a2a;
+      --wolf-purple: #4a3f6b;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --success: #27ae60;
+      --border: rgba(255, 255, 255, 0.06);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      --radius: 16px;
     }
 
     * {
@@ -28,9 +35,60 @@
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at top, #1a2040 0%, var(--bg) 55%);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: url('../images/werewolf-background.jpg') no-repeat center center fixed;
+      background-size: cover;
       color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Dark overlay on background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.78);
+      z-index: -1;
+    }
+
+    /* Moon glow */
+    body::after {
+      content: '🌕';
+      position: fixed;
+      top: 20px;
+      right: 60px;
+      font-size: 40px;
+      opacity: 0.15;
+      filter: blur(1px);
+      z-index: -1;
+      pointer-events: none;
+      animation: moonPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes moonPulse {
+      0%, 100% { opacity: 0.12; transform: scale(1); }
+      50% { opacity: 0.2; transform: scale(1.05); }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(108, 138, 255, 0.25);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(108, 138, 255, 0.4);
     }
 
     .app {
@@ -38,75 +96,124 @@
       margin: 0 auto;
       padding: 20px;
       display: grid;
-      gap: 16px;
+      gap: 18px;
       grid-template-columns: 1.12fr 0.88fr;
     }
 
+    /* ── Header ── */
     header {
       grid-column: 1 / -1;
-      background: linear-gradient(135deg, rgba(124, 140, 255, 0.18), rgba(74, 214, 169, 0.10));
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 18px 20px;
-      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, rgba(74, 63, 107, 0.25), rgba(192, 57, 43, 0.08), rgba(26, 58, 42, 0.15));
+      border: 1px solid rgba(192, 57, 43, 0.12);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--moon-glow) 0%, transparent 70%);
+      pointer-events: none;
     }
 
     header h1 {
       margin: 0 0 6px;
-      font-size: 26px;
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, var(--moon) 0%, #d4c49a 50%, var(--blood-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    header p {
+    header .subtitle {
       margin: 0;
       color: var(--muted);
+      font-size: 13px;
     }
 
+    header .wolf-icons {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      opacity: 0.6;
+      letter-spacing: 4px;
+    }
+
+    /* ── Cards ── */
     .card {
-      background: rgba(23, 27, 46, 0.92);
+      background: var(--panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: border-color 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
     }
 
     .card h2,
     .card h3 {
       margin: 0;
-      padding: 16px 18px;
+      padding: 14px 18px;
       border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.015);
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--moon);
     }
 
     .card .content {
       padding: 16px 18px;
     }
 
+    /* ── Forms ── */
     label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--muted);
       margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
     }
 
     input,
     textarea,
-    button,
     select {
       width: 100%;
-      background: #101425;
+      background: rgba(8, 11, 20, 0.8);
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
       padding: 12px 14px;
       font: inherit;
+      font-size: 14px;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     input:focus,
     textarea:focus,
     select:focus {
-      border-color: rgba(124, 140, 255, 0.7);
-      box-shadow: 0 0 0 3px rgba(124, 140, 255, 0.12);
+      border-color: rgba(108, 138, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(108, 138, 255, 0.1);
     }
 
     textarea {
@@ -133,68 +240,93 @@
       flex-wrap: wrap;
     }
 
+    /* ── Buttons ── */
     button {
       cursor: pointer;
       border: none;
-      background: linear-gradient(135deg, var(--accent), #9ea7ff);
+      background: linear-gradient(135deg, var(--blood), #a93226);
       color: white;
       font-weight: 700;
-      letter-spacing: 0.2px;
-      transition: transform .08s ease, opacity .15s ease, filter .15s ease;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-family: inherit;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.15s ease;
       width: auto;
       min-width: 120px;
+      outline: none;
     }
 
     button:hover {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     button.secondary {
-      background: #27304d;
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
     }
 
     button.good {
-      background: linear-gradient(135deg, #24c08a, #4ad6a9);
+      background: linear-gradient(135deg, #1e8449, var(--success));
+    }
+
+    button.good:hover {
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
     }
 
     button.warn {
-      background: linear-gradient(135deg, #d79a1a, #ffd166);
+      background: linear-gradient(135deg, #d68910, var(--warning));
       color: #1b1b1b;
     }
 
     button.danger {
-      background: linear-gradient(135deg, #ff6b6b, #ff8f8f);
+      background: linear-gradient(135deg, var(--blood), var(--blood-light));
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
     .small {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text);
-      font-size: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(192, 57, 43, 0.12);
+      color: var(--blood-light);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(192, 57, 43, 0.15);
       margin-right: 8px;
       margin-bottom: 8px;
       white-space: nowrap;
+      text-transform: uppercase;
     }
 
+    /* ── Player list ── */
     .list {
       display: grid;
       gap: 8px;
@@ -208,41 +340,56 @@
       justify-content: space-between;
       gap: 10px;
       align-items: center;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .player-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
     }
 
     .player-item.dead {
-      opacity: 0.55;
+      opacity: 0.4;
+      border-color: rgba(192, 57, 43, 0.15);
+      background: rgba(192, 57, 43, 0.04);
+    }
+
+    .player-item.dead::after {
+      content: '💀';
+      font-size: 14px;
     }
 
     .player-meta {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       margin-top: 2px;
     }
 
+    /* ── Log ── */
     .log {
-      background: #0d1020;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px;
       min-height: 240px;
       max-height: 560px;
       overflow: auto;
       white-space: pre-wrap;
-      line-height: 1.45;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
+      line-height: 1.55;
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: rgba(216, 220, 232, 0.8);
     }
 
     .status-box {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(74, 63, 107, 0.15), rgba(192, 57, 43, 0.06));
+      border: 1px solid rgba(108, 138, 255, 0.1);
       margin-bottom: 12px;
     }
 
@@ -250,17 +397,21 @@
       color: var(--muted);
     }
 
+    /* ── Overlay / Modal ── */
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(3, 5, 14, 0.94);
+      background: rgba(3, 5, 12, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.25s ease;
+      z-index: 100;
     }
 
     .overlay.show {
@@ -270,16 +421,26 @@
 
     .overlay-card {
       width: min(760px, 100%);
-      background: linear-gradient(180deg, rgba(28, 34, 59, 0.98), rgba(15, 18, 32, 0.98));
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      border-radius: 24px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
-      padding: 22px;
+      background: linear-gradient(180deg, rgba(20, 25, 48, 0.98), rgba(10, 14, 26, 0.98));
+      border: 1px solid rgba(192, 57, 43, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(192, 57, 43, 0.06);
+      padding: 24px;
+      animation: modalSlideIn 0.25s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { transform: translateY(20px) scale(0.97); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
     }
 
     .overlay h2 {
       margin: 0 0 10px;
-      font-size: 24px;
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--moon);
+      letter-spacing: 1px;
     }
 
     .overlay p {
@@ -288,13 +449,13 @@
     }
 
     .overlay .big {
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.6;
-      padding: 16px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      margin-bottom: 14px;
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 16px;
     }
 
     .overlay input {
@@ -307,7 +468,7 @@
 
     .hr {
       height: 1px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       margin: 12px 0;
     }
 
@@ -324,15 +485,15 @@
     }
 
     .kbd {
-      font-size: 12px;
+      font-size: 11px;
       padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--text);
     }
 
-    /* ----- Button selection grid ----- */
+    /* ── Player choice buttons ── */
     .player-choice-grid {
       display: flex;
       flex-wrap: wrap;
@@ -344,35 +505,48 @@
     }
 
     .player-choice-btn {
-      background: linear-gradient(135deg, #343a57, #2b304a);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(135deg, rgba(74, 63, 107, 0.5), rgba(40, 35, 60, 0.8));
+      border: 1px solid rgba(108, 138, 255, 0.15);
       color: var(--text);
-      padding: 10px 20px;
-      border-radius: 14px;
+      padding: 12px 22px;
+      border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.2s, transform 0.1s;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.15s ease;
       min-width: 120px;
       flex: 1 0 auto;
     }
 
     .player-choice-btn:hover {
-      background: linear-gradient(135deg, #4b5380, #3b416a);
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, rgba(108, 138, 255, 0.25), rgba(74, 63, 107, 0.5));
+      border-color: rgba(108, 138, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(108, 138, 255, 0.15);
     }
 
     .player-choice-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.3;
       cursor: not-allowed;
       transform: none;
       filter: grayscale(0.6);
+      box-shadow: none;
     }
 
     .player-choice-btn.skip {
-      background: linear-gradient(135deg, #4a5568, #2d3748);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      color: var(--muted);
     }
 
+    .player-choice-btn.skip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: none;
+    }
+
+    /* ── Responsive ── */
     @media (max-width: 980px) {
       .app {
         grid-template-columns: 1fr;
@@ -386,13 +560,22 @@
       button {
         width: 100%;
       }
+
+      header h1 {
+        font-size: 22px;
+      }
+
+      body::after {
+        right: 20px;
+        font-size: 28px;
+      }
     }
 
     button:focus,
     input:focus,
     textarea:focus,
     select:focus {
-      outline: 2px solid var(--accent);
+      outline: 2px solid rgba(108, 138, 255, 0.4);
       outline-offset: 2px;
     }
   </style>
@@ -401,8 +584,9 @@
 <body>
   <div class="app">
     <header>
-      <h1>Werewolf / Ma Sói — Browser Edition</h1>
-      <p>Single‑file host tool with button‑based player selection, private role reveals, and safer state handling.</p>
+      <h1>🐺 Ma Sói — Werewolf</h1>
+      <p class="subtitle">Browser-based host tool — private role reveals, button selection, full night/day automation</p>
+      <div class="wolf-icons">🌕 🌲 🐺 🔮 🏹 💀 🌲 🌕</div>
     </header>
 
     <section class="card" id="setupCard">
