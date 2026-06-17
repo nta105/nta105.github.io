@@ -20,7 +20,7 @@ html {
 .navbar {
     background-color: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(5px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Active link styling */
@@ -32,25 +32,37 @@ html {
 
 /* Hover effect for nav links */
 .nav-link:hover {
-    color: rgba(255,255,255,0.9) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     transform: translateY(-1px);
     transition: all 0.2s ease;
 }
 
-h1, h2, h3 {
-    font-family: 'Playfair Display', serif; /* Stylish header font */
-    text-shadow: 1px 1px 2px black; /* Maintains text readability */
+h1,
+h2,
+h3 {
+    font-family: 'Playfair Display', serif;
+    /* Stylish header font */
+    text-shadow: 1px 1px 2px black;
+    /* Maintains text readability */
 }
 
 body::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* increased opacity for better contrast */
     z-index: -1;
 }
-.container, .navbar, footer, header, section {
+
+.container,
+.navbar,
+footer,
+header,
+section {
     background-color: transparent;
     color: #fff;
 }
@@ -63,20 +75,32 @@ section {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.navbar, footer {
+.navbar,
+footer {
     background-color: rgba(0, 0, 0, 0.85);
 }
 
+/* Social icons base size */
 .social-icon i {
     font-size: 2rem;
     transition: transform 0.2s;
 }
 
+/* Social icon hover – brighten colors */
 .social-icon:hover i {
     transform: scale(1.1);
+    filter: brightness(1.2);
 }
 
-h1, h2, h3, p {
+/* Utility class to hide elements */
+.hidden {
+    display: none !important;
+}
+
+h1,
+h2,
+h3,
+p {
     text-shadow: 1px 1px 2px black;
 }
 
@@ -97,7 +121,9 @@ h1, h2, h3, p {
     opacity: 0.9;
 }
 
-.facebook i { color: #1877F2; }
+.facebook i {
+    color: #1877F2;
+}
 
 .instagram i {
     background: radial-gradient(circle farthest-corner at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
@@ -107,7 +133,9 @@ h1, h2, h3, p {
     text-fill-color: transparent;
 }
 
-.youtube i { color: #FF0000; }
+.youtube i {
+    color: #FF0000;
+}
 
 
 @media (max-width: 768px) {
@@ -115,34 +143,44 @@ h1, h2, h3, p {
         width: 100%;
     }
 }
+
 .social-icon i {
-    font-size: 3rem;  /* Increased from 2rem to 3rem */
-    transition: transform 0.2s;  /* Smooth size transition on hover */
+    font-size: 3rem;
+    /* Increased from 2rem to 3rem */
+    transition: transform 0.2s;
+    /* Smooth size transition on hover */
 }
 
 .social-icon:hover i {
-    transform: scale(1.1);  /* Slightly enlarges the icon when hovered */
+    transform: scale(1.1);
+    /* Slightly enlarges the icon when hovered */
 }
 
 @media (max-width: 767px) {
     img.venmo-qr {
-        width: 100%; /* makes the image width responsive to its container */
-        max-width: 200px; /* limits the image size to not become too large */
-        height: auto; /* keeps the aspect ratio intact */
+        width: 100%;
+        /* makes the image width responsive to its container */
+        max-width: 200px;
+        /* limits the image size to not become too large */
+        height: auto;
+        /* keeps the aspect ratio intact */
     }
 }
 
 /* For larger screens */
 @media (min-width: 768px) {
     img.venmo-qr {
-        max-width: 100%; /* Allows the image to fill the container */
-        height: auto; /* Maintains aspect ratio */
+        max-width: 100%;
+        /* Allows the image to fill the container */
+        height: auto;
+        /* Maintains aspect ratio */
     }
 }
 
 /* Improve QR code sizing - make it bigger */
 img.venmo-qr {
-    max-width: 400px; /* Increased from 300px */
+    max-width: 400px;
+    /* Increased from 300px */
     width: 100%;
     height: auto;
     display: block;
@@ -168,7 +206,8 @@ img.venmo-qr {
 
 /* Improve social media section */
 .social-icon {
-    display: block; /* Makes the entire block centered */
+    display: block;
+    /* Makes the entire block centered */
     text-align: center;
     margin: 0 auto;
     text-decoration: none;
@@ -191,7 +230,8 @@ img.venmo-qr {
     margin: 0 auto;
 }
 
-.zelle-info, .venmo-info {
+.zelle-info,
+.venmo-info {
     width: 100%;
     margin-bottom: 30px;
 }
@@ -207,11 +247,14 @@ img.venmo-qr {
 .profile-image {
     width: 100%;
     height: auto;
-    max-width: 400px; /* Increased from 250px */
-    object-fit: contain; /* Changed from cover to contain */
+    max-width: 400px;
+    /* Increased from 250px */
+    object-fit: contain;
+    /* Changed from cover to contain */
     border: 3px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 12px; /* Changed from rounded-circle to rounded corners */
+    border-radius: 12px;
+    /* Changed from rounded-circle to rounded corners */
 }
 
 /* Add responsive adjustments for profile image */
@@ -222,7 +265,8 @@ img.venmo-qr {
 }
 
 /* Improve text readability */
-p, li {
+p,
+li {
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
@@ -230,6 +274,12 @@ p, li {
 /* Responsive QR code size for mobile */
 @media (max-width: 767px) {
     img.venmo-qr {
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            /* subtle depth on hover */
+        }
+
         max-width: 300px;
     }
 }
@@ -245,7 +295,7 @@ p, li {
     margin-bottom: 20px;
 }
 
-#donate > p {
+#donate>p {
     max-width: 700px;
     margin: 0 auto 40px;
     font-size: 1.2rem;
@@ -296,19 +346,19 @@ p, li {
     #donate {
         padding: 20px;
     }
-    
+
     .support-card {
         padding: 20px;
     }
-    
+
     .venmo-qr {
         max-width: 350px;
     }
-    
+
     .support-card h3 {
         font-size: 1.8rem;
     }
-    
+
     .support-card p {
         font-size: 1.2rem;
     }
@@ -325,7 +375,7 @@ p, li {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -340,7 +390,7 @@ p, li {
 }
 
 .play-button {
-    background: rgba(255,0,0,0.8);
+    background: rgba(255, 0, 0, 0.8);
     border: none;
     border-radius: 50%;
     width: 80px;
@@ -359,7 +409,7 @@ p, li {
 
 .play-button:hover {
     transform: scale(1.1);
-    background: rgba(255,0,0,1);
+    background: rgba(255, 0, 0, 1);
 }
 
 /* Improve section transitions */
@@ -378,7 +428,7 @@ section:hover {
 
 .support-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Improve social media icons */
@@ -390,5 +440,5 @@ section:hover {
 
 .social-card:hover {
     transform: translateY(-5px);
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }

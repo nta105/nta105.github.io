@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Thien An Nguyen - Professional Guitarist & Music Instructor based in the Bay Area. Offering live performances and music instruction.">
-    <title>Thien An Nguyen - Guitarist</title>
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://yourdomain.com/">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Thien An Nguyen - Guitarist | Professional Guitarist & Music Instructor</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link
@@ -102,8 +105,8 @@
                             <i class="fas fa-play"></i>
                         </button>
                     </div>
-                    <iframe id="youtube-video" class="embed-responsive-item"
-                        src="https://www.youtube.com/embed/8Xu0W06eUaw"
+                    <iframe id="youtube-video" class="embed-responsive-item" src=""
+                        data-src="https://www.youtube.com/embed/8Xu0W06eUaw"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
                     </iframe>
@@ -231,10 +234,32 @@
 
             if (overlay && video) {
                 overlay.addEventListener('click', function () {
-                    video.src += '?autoplay=1';
+                    const src = video.getAttribute('data-src');
+                    if (src) {
+                        video.src = src + '?autoplay=1';
+                    }
                     overlay.classList.add('hidden');
                 });
             }
+        });
+    </script>
+    <!-- Back to Top Button -->
+    <button id="back-to-top" aria-label="Back to top"
+        style="display:none;position:fixed;bottom:1rem;right:1rem;background:#333;color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:1.5rem;cursor:pointer;z-index:1000;">↑</button>
+    <script>
+        // Show/hide back-to-top button
+        const backBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backBtn.style.display = 'flex';
+                backBtn.style.alignItems = 'center';
+                backBtn.style.justifyContent = 'center';
+            } else {
+                backBtn.style.display = 'none';
+            }
+        });
+        backBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
 </body>
