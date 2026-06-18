@@ -1174,7 +1174,7 @@
         body: 'Những người khác nhắm mắt.',
         primaryText: 'Tiếp tục',
       });
-      const activeWolves = state.players.filter(p => p.isAlive && p.role.includes('Sói') && state.players.indexOf(p) !== intentDisabledPlayer);
+      const activeWolves = state.players.filter(p => p.isAlive && (p.role.includes('Sói') || p.isTransformed) && state.players.indexOf(p) !== intentDisabledPlayer);
       if (activeWolves.length) {
         const num = state.extraKillNextNight ? 2 : 1;
         state.extraKillNextNight = false;
