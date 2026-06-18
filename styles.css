@@ -396,9 +396,8 @@ a:hover {
 
 /* ===== GALLERY SECTION ===== */
 .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    columns: 3;
+    column-gap: 16px;
     margin-top: 20px;
 }
 
@@ -407,14 +406,17 @@ a:hover {
     overflow: hidden;
     border-radius: 12px;
     cursor: pointer;
-    aspect-ratio: 4/3;
     background: rgba(255, 255, 255, 0.05);
+    break-inside: avoid;
+    margin-bottom: 16px;
+    display: inline-block;
+    width: 100%;
 }
 
 .gallery-item img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
     transition: transform 0.5s ease;
 }
 
@@ -480,14 +482,14 @@ a:hover {
 
 @media (max-width: 767px) {
     .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        columns: 2;
+        column-gap: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .gallery-grid {
-        grid-template-columns: 1fr;
+        columns: 1;
     }
 }
 
