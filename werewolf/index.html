@@ -1070,14 +1070,17 @@
         if (mirrorIndex !== -1) {
           const alive = getAlivePlayers();
           const mirrorAliveIdx = alive.findIndex(p => p === state.players[mirrorIndex]);
+          const alreadyMarked = alive.filter(p => p.markedByMirror).map(p => p.name).join(', ');
           const choice = await awaitPlayerChoice({
             title: 'Chào Gương, chọn người phản chiếu:',
-            subtitle: '',
+            subtitle: alreadyMarked ? `Những người đã bị soi: ${alreadyMarked}` : 'Bạn chưa soi ai cả',
             disabledIndices: [mirrorAliveIdx],
           });
           mirrorTargetIndex = alive[choice] ? state.players.indexOf(alive[choice]) : null;
           state.players[mirrorTargetIndex].markedByMirror = true;
-          log(`Gương soi ${state.players[mirrorTargetIndex].name}`);
+          const markedCount = state.players.filter(p => p.markedByMirror).length;
+          const totalAlive = state.players.filter(p => p.isAlive).length;
+          log(`Gương soi ${state.players[mirrorTargetIndex].name} (${markedCount}/${totalAlive} người đã bị soi)`);
         }
         await showSimplePrompt({
           title: 'Xong',
@@ -1458,21 +1461,92 @@
 
     async function checkVictory() {
       const alives = state.players.filter(p => p.isAlive);
-      const wolves = alives.filter(p => p.side === 'Sói' || p.isTransformed);
-      const villagers = alives.filter(p => p.side === 'Dân' && !p.isTransformed);
-      const mirrorAlive = alives.filter(p => p.role === 'Gương');
+      const mirrors = alives.filter(p => p.role === 'Gương');
+
+      // ── DETECT MIXED COUPLES (one villager, one werewolf) ──
+      let mixedCouple = null;
+      const processedIndices = new Set();
+      
+      for (const player of alives) {
+        if (player.linkedWith !== null && !processedIndices.has(player.linkedWith)) {
+          const partnerIdx = player.linkedWith;
+          const partner = state.players[partnerIdx];
+          if (partner && partner.isAlive) {
+            const p1Idx = state.players.indexOf(player);
+            const p1Side = (player.side === 'Sói' || player.isTransformed) ? 'Sói' : 'Dân';
+            const p2Side = (partner.side === 'Sói' || partner.isTransformed) ? 'Sói' : 'Dân';
+            
+            // Mixed couple: one from Sói side, one from Dân side
+            if (p1Side !== p2Side) {
+              mixedCouple = {
+                p1Idx,
+                p2Idx: partnerIdx,
+                p1: player,
+                p2: partner,
+              };
+            }
+            
+            processedIndices.add(p1Idx);
+            processedIndices.add(partnerIdx);
+          }
+        }
+      }
 
       let victoryMsg = null;
-      if (mirrorAlive.length) {
-        const m = mirrorAlive[0];
-        const others = alives.filter(p => p !== m);
-        if (others.length && others.every(p => p.markedByMirror)) {
-          victoryMsg = `🪞 GƯƠNG (${m.name}) CHIẾN THẮNG TUYỆT ĐỐI!`;
+
+      // ── MIRROR VICTORY CHECK (highest priority) ──
+      if (mirrors.length) {
+        const mirror = mirrors[0];
+        const others = alives.filter(p => p !== mirror);
+        
+        // Mirror wins when all other alive players are marked by Mirror
+        if (others.length > 0 && others.every(p => p.markedByMirror)) {
+          victoryMsg = `🪞 GƯƠNG (${mirror.name}) CHIẾN THẮNG TUYỆT ĐỐI! Tất cả người chơi đã bị soi.`;
         }
-      } else if (!villagers.length) {
-        victoryMsg = '🐺 PHE MA SÓI CHIẾN THẮNG!';
-      } else if (!wolves.length) {
-        victoryMsg = '🏆 PHE DÂN LÀNG CHIẾN THẮNG!';
+        // If Mirror is alive but hasn't marked everyone yet
+        // Game continues - don't check other victories yet
+        else {
+          const phaseName = mixedCouple ? '4 phe (Gương, Cặp đôi, Sói, Dân)' : '3 phe (Gương, Sói, Dân)';
+          log(`[TRÒ CHƠI TIẾP TIẾP] Gương còn sống. Cuộc chơi tiếp tục với ${phaseName}`);
+          return false;
+        }
+      }
+      // ── MIXED COUPLE VICTORY CHECK ──
+      else if (mixedCouple) {
+        const othersInGame = alives.filter(p => p !== mixedCouple.p1 && p !== mixedCouple.p2);
+        
+        // Mixed couple wins when all other players from different sides are dead
+        // (i.e., only the couple is alive)
+        if (othersInGame.length === 0) {
+          victoryMsg = `❤️ CẶP ĐÔI (${mixedCouple.p1.name} & ${mixedCouple.p2.name}) CHIẾN THẮNG! Chỉ còn mình họ!`;
+        }
+        // Game continues with 3 factions: mixed couple (3rd party), wolves, villagers
+        else {
+          const otherWolves = alives.filter(p => (p.side === 'Sói' || p.isTransformed) && p !== mixedCouple.p1 && p !== mixedCouple.p2);
+          const otherVillagers = alives.filter(p => p.side === 'Dân' && !p.isTransformed && p !== mixedCouple.p1 && p !== mixedCouple.p2);
+          log(`[TRÒ CHƠI TIẾP TIẾP] Cặp đôi (${mixedCouple.p1.name} & ${mixedCouple.p2.name}) còn sống. Cuộc chơi tiếp tục với 3 phe: Cặp đôi, Sói (${otherWolves.length}), Dân (${otherVillagers.length})`);
+          return false;
+        }
+      }
+      // ── REGULAR VILLAGER VS WEREWOLF CHECK ──
+      else {
+        const wolves = alives.filter(p => p.side === 'Sói' || p.isTransformed);
+        const villagers = alives.filter(p => p.side === 'Dân' && !p.isTransformed);
+        const hasAliveWitchWithPoison = !state.isCursed && state.witchPoison && alives.some(p => p.role === 'Phù Thủy');
+        const hasAliveHunterShotPotential = !state.isCursed && alives.some(p => p.role === 'Thợ Săn');
+        const hasPendingHunterShot = state.pendingHunterKill !== null && state.players[state.pendingHunterKill]?.isAlive;
+        const villagersHaveComebackPotential = hasAliveWitchWithPoison || hasAliveHunterShotPotential || hasPendingHunterShot;
+        
+        // Werewolves win when they reach voting parity or majority
+        // Only auto-end if villagers no longer have any kill path left.
+        // If villagers still have lethal resources (Witch poison / Hunter shot), keep the game running.
+        if (wolves.length > 0 && wolves.length >= villagers.length && !villagersHaveComebackPotential) {
+          victoryMsg = `🐺 PHE MA SÓI CHIẾN THẮNG! Sói đã đạt được đa số (${wolves.length} Sói vs ${villagers.length} Dân).`;
+        } 
+        // Villagers win when all werewolves are eliminated
+        else if (wolves.length === 0 && villagers.length > 0) {
+          victoryMsg = '🏆 PHE DÂN LÀNG CHIẾN THẮNG! Tất cả ma sói đã bị tiêu diệt.';
+        }
       }
 
       if (victoryMsg) {
